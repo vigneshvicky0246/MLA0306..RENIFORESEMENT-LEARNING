@@ -1,0 +1,80 @@
+import numpy as np
+
+class TemporalDifferenceTrain:
+    def __init__(self, algorithm):
+        self.algorithm = algorithm
+        self.position = (0, 0)  # Initial position in the grid
+        self.q_values = np.random.randint(1, 10, size=(5, 5, 4))  # Randomly initialized Q-values (single-digit numbers)
+
+    # rest of the class remains the same
+
+
+    def choose_action(self, state):
+        return np.argmax(self.q_values[state])
+
+    def update_q_values(self, state, action, reward, next_state):
+        if self.algorithm == 'qlearning':
+            self.qlearning_update(state, action, reward, next_state)
+
+    def qlearning_update(self, state, action, reward, next_state):
+        # Q-learning update rule
+        self.q_values[state[0], state[1], action] += alpha * (
+            reward + gamma * np.max(self.q_values[next_state[0], next_state[1]]) - self.q_values[state[0], state[1], action]
+        )
+
+def simulate_train(train, episodes, goal_reward):
+    total_reward = 0
+    episodes_to_goal = -1
+
+    for episode in range(episodes):
+        # Simulate the environment and update positions (replace with your actual simulation logic)
+        state = (0, 0)  # Example state for illustration
+        action = train.choose_action(state)
+        # ... (Simulate the environment and obtain next state, reward)
+        next_state = (1, 0)  # Example next state for illustration
+        reward = np.random.randint(1, 10)  # Example reward for illustration
+
+        # Update Q-values based on rewards and next states
+        train.update_q_values(state, action, reward, next_state)
+
+        total_reward += reward
+
+        # Check if the goal is reached
+        if total_reward >= goal_reward and episodes_to_goal == -1:
+            episodes_to_goal = episode + 1
+
+    return total_reward, episodes_to_goal
+
+# Parameters
+alpha = 0.1  # Learning rate
+gamma = 0.9  # Discount factor
+episodes = 1000
+goal_reward = 200
+
+# Initialize trains
+train_a = TemporalDifferenceTrain('td0')
+train_b = TemporalDifferenceTrain('sarsa')  # Placeholder for SARSA
+train_c = TemporalDifferenceTrain('qlearning')
+
+# Simulate trains
+total_reward_a, episodes_to_goal_a = simulate_train(train_a, episodes, goal_reward)
+total_reward_b, episodes_to_goal_b = simulate_train(train_b, episodes, goal_reward)
+total_reward_c, episodes_to_goal_c = simulate_train(train_c, episodes, goal_reward)
+
+# Display results
+print("Train A (TD(0)):")
+print("- Total reward after", episodes, "episodes:", total_reward_a)
+print("- Number of episodes to reach the goal:", episodes_to_goal_a)
+
+print("\nTrain B (SARSA):")
+print("- Total reward after", episodes, "episodes:", total_reward_b)
+print("- Number of episodes to reach the goal:", episodes_to_goal_b)
+
+print("\nTrain C (Q-Learning):")
+print("- Total reward after", episodes, "episodes:", total_reward_c)
+print("- Number of episodes to reach the goal:", episodes_to_goal_c)
+
+# Comparison
+if total_reward_c > total_reward_b > total_reward_a and episodes_to_goal_c < episodes_to_goal_b < episodes_to_goal_a:
+    print("\nComparison:")
+    print("- Train C (Q-Learning) outperforms Train B (SARSA) and Train A (TD(0)) by achieving the highest total reward and reaching the goal in the fewest episodes.")
